@@ -1,0 +1,34 @@
+@font-face {
+    font-family: Nokora;
+    font-style: normal;
+    font-display: swap;
+    src: url("../assets/fonts/Nokora-Regular.ttf") format("truetype");
+}
+
+:root {
+    --white: #FFFFFF;
+    --black: #000000;
+    --light-gray: #e5e5e5;
+}
+
+body, html {
+    font-family: Nokora,sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 , p  {
+    margin: 0;
+}
+
+p {
+    font-size: 18px;
+}
+
+a, input {
+    font-family: Nokora,sans-serif;
+    font-size: 18px;
+    text-decoration: none;
+    color: var(--black);
+    box-sizing: border-box;
+}
