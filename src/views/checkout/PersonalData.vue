@@ -1,6 +1,6 @@
 <template>
-  <div>
-Personal
+  <div class="route-wrapper">
+
   </div>
 </template>
 

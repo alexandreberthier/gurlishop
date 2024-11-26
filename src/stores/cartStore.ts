@@ -2,8 +2,11 @@ import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import { Item } from "@/models/Item";
+import {useRoute} from "vue-router";
 
 export const useCartStore = defineStore('cart', () => {
+    const route = useRoute()
+
     const showCartSlider: Ref<boolean> = ref(false);
 
     const savedCart = localStorage.getItem('cartItems');
@@ -61,7 +64,9 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     watch(itemsInCart, (newCart) => {
-        showCartSlider.value = newCart.length !== 0;
+        if(route.name !== 'cart') {
+            showCartSlider.value = newCart.length !== 0;
+        }
 
         localStorage.setItem(
             'cartItems',

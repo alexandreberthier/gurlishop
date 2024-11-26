@@ -3,7 +3,8 @@ import {createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateC
 import {auth, db} from "@/config/firebaseConfig";
 import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
-import { User} from "@/models/User";
+import {User} from "@/models/User";
+import type {UserDTO} from "@/models/User";
 import type {Order} from "@/models/User";
 import type {DeliveryData, PersonalData} from "@/models/User";
 import type {Ref} from "vue";
@@ -92,31 +93,26 @@ export const useAuthStore = defineStore('auth', () => {
 
     function watchUser() {
         onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser) {
+            if (firebaseUser && (!user.value || user.value.uid !== firebaseUser.uid)) {
                 const userDocRef = doc(db, "users", firebaseUser.uid);
                 getDoc(userDocRef)
                     .then(userDoc => {
                         if (userDoc.exists()) {
-                            const data = userDoc.data();
-                            user.value = User.fromDto(data as any);
+                            const data = userDoc.data() as UserDTO;
+                            user.value = User.fromDto(data);
                         } else {
-                            user.value = new User(
-                                firebaseUser.uid,
-                                {email: firebaseUser.email || ''},
-                                undefined,
-                                'user',
-                                new Date()
-                            );
+                            user.value = new User(firebaseUser.uid, { email: firebaseUser.email || '' });
                         }
                     })
                     .catch(error => {
                         errorMessage.value = `Fehler beim Abrufen der Benutzerdaten: ${error.message}`;
-                    })
+                    });
             } else {
                 user.value = null;
             }
         });
     }
+
 
 
     function logout() {

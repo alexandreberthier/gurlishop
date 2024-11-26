@@ -47,7 +47,7 @@ function togglePassword() {
 }
 
 const computedInputType = computed(() => {
-  if (inputType === InputType.PostalCode || InputType.Search) {
+  if (inputType === InputType.PostalCode || inputType === InputType.Search) {
     return InputType.Text
   }
   return inputType === InputType.Password && showPassword.value ? InputType.Text : inputType
