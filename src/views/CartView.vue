@@ -50,6 +50,7 @@
       <div class="button-wrapper">
         <DynamicButton
             :is-router-link="true"
+            path-name="personal-data"
             text="Zur Kasse"/>
       </div>
     </div>

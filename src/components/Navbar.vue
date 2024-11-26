@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-wrapper">
+  <div :class="['nav-wrapper', { 'scrolled': isScrollingDown }]">
     <router-link
         @click="navbarStore.closeMenu(), cartStore.hideCartSlider()"
         :to="{name: 'home'}">
@@ -9,6 +9,7 @@
     </router-link>
     <div :class="['links', {'open': navbarStore.menuOpen}]">
       <router-link
+          @click="navbarStore.closeMenu(), cartStore.hideCartSlider()"
           v-for="(link, index) in links"
           :key="index"
           :to="{name: link.linkPath}">
@@ -45,7 +46,7 @@
 
 <script setup lang="ts">
 import {getImage} from "@/utils/ImageUtils";
-import {computed, ref} from "vue";
+import {computed, onMounted, onUnmounted, type Ref, ref} from "vue";
 import {useAuthStore} from "@/stores/auth";
 import {useNavbarStore} from "@/stores/navbar";
 import {useCartStore} from "@/stores/cartStore";
@@ -61,8 +62,32 @@ const isLoggedIn = computed(() => {
 const links = ref([
   {linkName: 'Kontakt', linkPath: 'contact'},
   {linkName: 'Faq', linkPath: 'faq'},
-  {linkName: 'Warenkorb', linkPath: 'cart'}
 ])
+
+const isScrollingDown = ref(false);
+let lastScrollY = 0;
+let scrollTimeout: number | undefined = undefined;
+
+const handleScroll = () => {
+  const currentScrollY = window.scrollY;
+
+  isScrollingDown.value = currentScrollY > lastScrollY;
+  lastScrollY = currentScrollY;
+
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    isScrollingDown.value = false;
+  }, 200);
+};
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+  clearTimeout(scrollTimeout);
+});
 </script>
 
 <style scoped>
@@ -76,6 +101,11 @@ const links = ref([
   align-items: center;
   justify-content: space-between;
   background: var(--white);
+  transition: all 250ms ease-in-out;
+
+  &.scrolled {
+    height: 70px;
+  }
 
   .logo {
     display: flex;

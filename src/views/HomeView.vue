@@ -16,13 +16,14 @@
         </div>
       </div>
     </div>
-    <div class="item-flex">
+    <div v-if="filteredItems.length > 0" class="item-flex">
       <ProductCard
           v-for="item in filteredItems"
           :key="item.id"
           :item="item"
       />
     </div>
+    <p v-else>Keine Ergebnisse für <b>{{searchInput}}</b> </p>
   </StaticLayout>
 </template>
 

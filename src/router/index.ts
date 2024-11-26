@@ -12,6 +12,11 @@ import UserOrderView from "@/views/user/UserOrderView.vue";
 import {useAuthStore} from "@/stores/auth";
 import DetailsView from "@/views/DetailsView.vue";
 import {useCartStore} from "@/stores/cartStore";
+import CheckoutLayout from "@/views/checkout/CheckoutLayout.vue";
+import PersonalData from "@/views/checkout/PersonalData.vue";
+import DeliveryData from "@/views/checkout/DeliveryData.vue";
+import Payment from "@/views/checkout/Payment.vue";
+import ConfirmOrder from "@/views/checkout/ConfirmOrder.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +84,35 @@ const router = createRouter({
                     component: UserOrderView
                 }
             ]
+        },
+        {
+            path: '/checkout',
+            name: 'checkout',
+            component: CheckoutLayout,
+            redirect: {name: 'personal-data'},
+            meta: {hasItemsInCart: true},
+            children: [
+                {
+                    path: 'persoenliche-daten',
+                    name: 'personal-data',
+                    component: PersonalData
+                },
+                {
+                    path: 'lieferadresse',
+                    name: 'delivery-data',
+                    component: DeliveryData
+                },
+                {
+                    path: 'zahlung',
+                    name: 'payment',
+                    component: Payment
+                },
+                {
+                    path: 'bestellbestaetigung',
+                    name: 'confirm-order',
+                    component: ConfirmOrder
+                },
+            ]
         }
     ],
     linkActiveClass: 'active',
@@ -87,9 +121,9 @@ const router = createRouter({
             return savedPosition;
         }
         if (to.hash) {
-            return { el: to.hash, behavior: 'smooth' };
+            return {el: to.hash, behavior: 'smooth'};
         }
-        return { x: 0, y: 0, behavior: 'smooth' };
+        return {x: 0, y: 0, behavior: 'smooth'};
     }
 })
 
@@ -98,11 +132,11 @@ router.beforeEach(async (to, from, next) => {
     const cartStore = useCartStore()
 
     if (to.meta.isLoggedIn && !authStore.isLoggedIn) {
-        return next({ name: 'login' });
+        return next({name: 'login'});
     }
 
-    if(to.meta.hasItemsInCart && cartStore.totalCartItems < 1 ) {
-        return next({ name: 'home' });
+    if (to.meta.hasItemsInCart && cartStore.totalCartItems < 1) {
+        return next({name: 'home'});
     }
 
     next();
