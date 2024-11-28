@@ -4,7 +4,7 @@
       <div
           v-for="(step, index) in checkoutStore.checkoutSteps"
           :key="index"
-          @click="goToStep"
+          @click="goToStep(index)"
           class="step"
           :class="{'active': index === currentStepIndex, 'completed': index < currentStepIndex }">
         <p>{{ step.heading }}</p>
@@ -47,7 +47,23 @@ const comp: Ref<ValidationComponent | null> = ref(null);
 
 const currentStepIndex = computed(() =>
     checkoutStore.checkoutSteps.findIndex(step => step.pathName === route.name)
-);
+)
+
+function goToStep(index: number) {
+  if (index < 0 || index >= checkoutStore.checkoutSteps.length) {
+    console.error("Ungültiger Schritt-Index:", index);
+    return;
+  }
+
+  if (checkoutStore.checkoutSteps[index].isValidated || index <= currentStepIndex.value) {
+    router.push({ name: checkoutStore.checkoutSteps[index].pathName });
+  } else {
+    console.warn("Der gewählte Schritt ist nicht validiert. Navigation blockiert.");
+  }
+}
+
+
+
 
 function validate() {
   if (comp.value) {
@@ -61,10 +77,11 @@ function validate() {
     }
 
     if (stepIndex >= 0 && stepIndex < checkoutStore.checkoutSteps.length - 1) {
-      router.push({name: checkoutStore.checkoutSteps[stepIndex + 1].pathName});
+      router.push({ name: checkoutStore.checkoutSteps[stepIndex + 1].pathName });
     }
   }
 }
+
 
 function goBack() {
   const stepIndex = currentStepIndex.value;
