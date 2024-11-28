@@ -63,8 +63,6 @@ function goToStep(index: number) {
 }
 
 
-
-
 function validate() {
   if (comp.value) {
     const isValid = comp.value?.validateInputFields();
@@ -85,6 +83,10 @@ function validate() {
 
 function goBack() {
   const stepIndex = currentStepIndex.value;
+
+  if(stepIndex !== 1 && stepIndex === 0){
+    router.push({name: 'cart'})
+  }
 
   if (stepIndex !== -1 && stepIndex > 0) {
     router.push({name: checkoutStore.checkoutSteps[stepIndex - 1].pathName});

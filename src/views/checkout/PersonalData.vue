@@ -21,7 +21,6 @@
     <DynamicInput
         label="Telefonnummer"
         v-model:user-input="checkoutStore.personalData.phoneNumber"
-        v-model:user-error="phoneNumberError"
         :input-type="InputType.Phone"
     />
   </div>
@@ -40,7 +39,6 @@ const checkoutStore = useCheckoutStore()
 const firstNameError: Ref<string> = ref('')
 const lastNameError: Ref<string> = ref('')
 const emailError: Ref<string> = ref('')
-const phoneNumberError: Ref<string> = ref('')
 
 
 function validateInputFields() {
@@ -48,7 +46,6 @@ function validateInputFields() {
     {value: checkoutStore.personalData.firstName, error: firstNameError, label: 'Vorname'},
     {value: checkoutStore.personalData.lastName, error: lastNameError, label: 'Nachname'},
     {value: checkoutStore.personalData.email, error: emailError, label: 'Email'},
-    {value: checkoutStore.personalData.phoneNumber, error: phoneNumberError, label: 'Telefonnummer'}
   ]
 
   let errorHTML: HTMLElement | null = null
