@@ -20,7 +20,7 @@ import {ButtonType} from "@/models/ButtonType";
 
 const {text, isRouterLink, pathName, routeHash, buttonType = ButtonType.Primary} = defineProps<{
   text: string
-  buttonType: ButtonType
+  buttonType?: ButtonType
   isRouterLink?: boolean
   pathName?: string,
   routeHash?: string
