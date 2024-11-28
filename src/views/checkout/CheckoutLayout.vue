@@ -15,13 +15,21 @@
     </router-view>
     <div class="button-section">
       <DynamicButton
+          v-if="currentStepIndex !== 2 && currentStepIndex !== 3"
           :button-type="ButtonType.Primary"
           @click="validate"
           text="Weiter"/>
       <DynamicButton
+          v-if="currentStepIndex !== 3"
           @click="goBack"
           :button-type="ButtonType.Secondary"
-          text="Zurück"/>
+          :text="dynamicBackButtonText"/>
+      <DynamicButton
+          v-else
+          :is-router-link="true"
+          path-name="home"
+          :button-type="ButtonType.Primary"
+          text="Zurück zum Start"/>
     </div>
   </StaticLayout>
 </template>
@@ -29,7 +37,7 @@
 
 <script setup lang="ts">
 import StaticLayout from "@/views/layout/StaticLayout.vue";
-import {type Ref, ref, computed} from "vue";
+import {type Ref, ref, computed, type ComputedRef} from "vue";
 import DynamicButton from "@/components/DynamicButton.vue";
 import {ButtonType} from "@/models/ButtonType";
 import {useCheckoutStore} from "@/stores/checkout";
@@ -49,18 +57,35 @@ const currentStepIndex = computed(() =>
     checkoutStore.checkoutSteps.findIndex(step => step.pathName === route.name)
 )
 
+const dynamicBackButtonText: ComputedRef<string> = computed(()=> {
+  if(currentStepIndex.value === 0) {
+    return 'Zurück zum Warenkorb'
+  } else {
+    return 'Zurück'
+  }
+})
+
 function goToStep(index: number) {
-  if (index < 0 || index >= checkoutStore.checkoutSteps.length) {
-    console.error("Ungültiger Schritt-Index:", index);
+  // Verhindert Navigation, wenn Benutzer auf dem letzten Schritt ist
+  if (currentStepIndex.value === checkoutStore.checkoutSteps.length - 1) {
+    console.warn("Navigation blockiert: Du kannst auf dem letzten Schritt nicht zurück.");
     return;
   }
 
-  if (checkoutStore.checkoutSteps[index].isValidated || index <= currentStepIndex.value) {
-    router.push({ name: checkoutStore.checkoutSteps[index].pathName });
-  } else {
-    console.warn("Der gewählte Schritt ist nicht validiert. Navigation blockiert.");
+  if (index < 0 || index >= checkoutStore.checkoutSteps.length) {
+    console.error(`Ungültiger Schritt-Index: ${index}`);
+    return;
   }
+
+  if (!checkoutStore.checkoutSteps[index].isValidated && index > currentStepIndex.value) {
+    console.warn("Navigation blockiert: Der gewählte Schritt ist nicht validiert.");
+    return;
+  }
+
+  router.push({ name: checkoutStore.checkoutSteps[index].pathName });
 }
+
+
 
 
 function validate() {
@@ -84,14 +109,21 @@ function validate() {
 function goBack() {
   const stepIndex = currentStepIndex.value;
 
-  if(stepIndex !== 1 && stepIndex === 0){
-    router.push({name: 'cart'})
+  if (stepIndex === checkoutStore.checkoutSteps.length - 1) {
+    console.warn("Rücknavigation blockiert: Du kannst auf dem letzten Schritt nicht zurück.");
+    return;
   }
 
-  if (stepIndex !== -1 && stepIndex > 0) {
-    router.push({name: checkoutStore.checkoutSteps[stepIndex - 1].pathName});
+  if (stepIndex === 0) {
+    router.push({ name: "cart" });
+    return;
+  }
+
+  if (stepIndex > 0) {
+    router.push({ name: checkoutStore.checkoutSteps[stepIndex - 1].pathName });
   }
 }
+
 </script>
 
 
