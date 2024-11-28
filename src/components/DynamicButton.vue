@@ -1,6 +1,6 @@
 <template>
   <component
-      class="button"
+      :class="['button', buttonType]"
       :is="isRouterLink ? 'router-link' : 'button'"
       v-bind="isRouterLink && pathName ? {to: {name: pathName, hash: routeHash}} : null"
   >
@@ -16,9 +16,11 @@
 <script setup lang="ts">
 
 import {getImage} from "@/utils/ImageUtils";
+import {ButtonType} from "@/models/ButtonType";
 
-const {text, isRouterLink, pathName, routeHash} = defineProps<{
+const {text, isRouterLink, pathName, routeHash, buttonType = ButtonType.Primary} = defineProps<{
   text: string
+  buttonType: ButtonType
   isRouterLink?: boolean
   pathName?: string,
   routeHash?: string
@@ -43,9 +45,24 @@ const {text, isRouterLink, pathName, routeHash} = defineProps<{
   position: relative;
   transition: all 250ms ease-in-out;
 
+  &.secondary {
+    background-color: var(--white);
+    border: 1px solid var(--black);
+
+    &:hover {
+      background: var(--light-gray);
+      opacity: 1;
+    }
+
+    p {
+      color: var(--black);
+    }
+  }
+
   &:hover {
     opacity: 0.7;
   }
+
 
   &:hover .icon-wrapper {
     transform: translateX(70px);
@@ -53,7 +70,6 @@ const {text, isRouterLink, pathName, routeHash} = defineProps<{
 
   p {
     color: var(--white);
-
   }
 
   .icon-wrapper {

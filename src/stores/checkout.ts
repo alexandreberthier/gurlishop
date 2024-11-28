@@ -7,6 +7,16 @@ import type { PersonalData, DeliveryData } from "@/models/User";
 export const useCheckoutStore = defineStore("checkout", () => {
     const authStore = useAuthStore();
 
+
+
+    const checkoutSteps = ref([
+        {heading: 'Persönliche Daten', pathName: 'personal-data', isValidated: false},
+        {heading: 'Lieferadresse', pathName: 'delivery-data', isValidated: false},
+        {heading: 'Zahlung', pathName: 'payment', isValidated: false},
+        {heading: 'Bestätigung', pathName: 'confirm-order', isValidated: false},
+    ])
+
+
     // Persönliche Daten
     const personalData: Ref<PersonalData> = ref({
         firstName: "",
@@ -38,9 +48,8 @@ export const useCheckoutStore = defineStore("checkout", () => {
         }
     };
 
-    loadStoredData(); // Daten beim Laden des Stores automatisch abrufen
+    loadStoredData();
 
-    // Beobachte Änderungen im `authStore`-Benutzer und aktualisiere die Daten
     watch(
         () => authStore.user,
         (newUser) => {
@@ -94,6 +103,7 @@ export const useCheckoutStore = defineStore("checkout", () => {
     return {
         personalData,
         deliveryData,
+        checkoutSteps,
         clearCheckoutData,
     };
 });
