@@ -7,13 +7,10 @@
           v-model:user-input="searchInput"
       />
       <div class="category-flex">
-        <div
-            v-for="(category, index) in categories"
-            :key="index"
-            @click="selectCategory(category.value)"
-            :class="['category', {'selected': selectedCategories.includes(category.value)}]">
-          {{ category.label }}
-        </div>
+        <DynamicMultiSelect
+            v-model:selected-options="selectedCategories"
+            :options="categoryOptions"
+        />
       </div>
     </div>
     <div v-if="filteredItems.length > 0" class="item-flex">
@@ -36,6 +33,8 @@ import {useProductStore} from "@/stores/product";
 import {Category, Item} from "@/models/Item";
 import DynamicInput from "@/components/DynamicInput.vue";
 import {InputType} from "@/models/InputType";
+import DynamicMultiSelect from "@/components/DynamicMultiSelect.vue";
+import type {Option} from "@/models/PropInterfaces";
 
 const productStore = useProductStore()
 
@@ -60,16 +59,7 @@ const filteredItems = computed(() => {
 });
 
 
-function selectCategory(category: string) {
-  if (selectedCategories.value.includes(category)) {
-    selectedCategories.value = selectedCategories.value.filter(c => c !== category);
-  } else {
-    selectedCategories.value = [...new Set([...selectedCategories.value, category])];
-  }
-}
-
-
-const categories = ref([
+const categoryOptions: Ref<Option[]> = ref([
   {
     label: 'Taschen',
     value: Category.Bags

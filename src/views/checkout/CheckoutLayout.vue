@@ -86,8 +86,6 @@ function goToStep(index: number) {
 }
 
 
-
-
 function validate() {
   if (comp.value) {
     const isValid = comp.value?.validateInputFields();
@@ -104,7 +102,6 @@ function validate() {
     }
   }
 }
-
 
 function goBack() {
   const stepIndex = currentStepIndex.value;
