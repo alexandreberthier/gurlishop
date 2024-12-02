@@ -51,7 +51,7 @@ const quantity: Ref<number> = ref(1)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   width: 320px;
   height: 400px;
 

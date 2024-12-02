@@ -20,7 +20,7 @@
           :item="item"
       />
     </div>
-    <p v-else>Keine Ergebnisse für <b>{{searchInput}}</b> </p>
+    <p v-else>Keine Ergebnisse für <b>{{ searchInput }}</b></p>
   </StaticLayout>
 </template>
 
@@ -83,27 +83,6 @@ const categoryOptions: Ref<Option[]> = ref([
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  .category-flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .category {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5px 10px;
-      box-sizing: border-box;
-      border:1px solid black;
-      cursor: pointer;
-
-      &.selected {
-        background: lavender;
-        font-weight: 700;
-      }
-    }
-  }
 }
 
 .item-flex {
@@ -111,9 +90,30 @@ const categoryOptions: Ref<Option[]> = ref([
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 32px;
+  gap: 64px;
+  justify-content: center;
+}
 
+@media (min-width: 1200px) {
+  .filter-section {
+    width: 100%;
+    flex-direction: row;
+    gap: 32px;
+    justify-content: left;
 
+    > * {
+      width: 300px;
+    }
+  }
+
+  .item-flex {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 80px;
+    justify-content: center;
+  }
 }
 
 </style>

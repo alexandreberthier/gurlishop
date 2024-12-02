@@ -30,6 +30,7 @@ const {header, subHeader} = defineProps<{
   .header-section {
     display: flex;
     flex-direction: column;
+   align-items: center;
     gap: 16px;
     width: 100%;
   }
@@ -37,7 +38,9 @@ const {header, subHeader} = defineProps<{
 
 @media (min-width: 740px) {
   .layout{
+    margin: 150px auto;
     width: 620px;
+    gap: 64px;
   }
 }
 

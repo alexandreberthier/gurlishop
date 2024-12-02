@@ -17,6 +17,7 @@ import PersonalData from "@/views/checkout/PersonalData.vue";
 import DeliveryData from "@/views/checkout/DeliveryData.vue";
 import Payment from "@/views/checkout/Payment.vue";
 import ConfirmOrder from "@/views/checkout/ConfirmOrder.vue";
+import ImprintView from "@/views/ImprintView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,11 @@ const router = createRouter({
             name: 'cart',
             component: CartView,
             meta: {hasItemsInCart: true}
+        },
+        {
+            path: '/impressum',
+            name: 'imprint',
+            component: ImprintView,
         },
         {
             path: '/auth',

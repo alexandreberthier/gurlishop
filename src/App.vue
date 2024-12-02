@@ -6,6 +6,9 @@
   <main>
     <RouterView></RouterView>
   </main>
+  <footer>
+    <Footer/>
+  </footer>
 </template>
 
 <script setup lang="ts">
@@ -13,6 +16,7 @@
 import {useAuthStore} from "@/stores/auth";
 import Navbar from "@/components/Navbar.vue";
 import CartNavSlider from "@/components/CartNavSlider.vue";
+import Footer from "@/components/Footer.vue";
 
 const authStore = useAuthStore()
 

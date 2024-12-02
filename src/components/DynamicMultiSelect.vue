@@ -87,7 +87,6 @@ function handleOutsideClick(event: Event) {
       showOptions.value = false;
     }
   }
-
 }
 
 
