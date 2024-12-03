@@ -7,7 +7,7 @@
       <DynamicInput
           label="Suche"
           :input-type="InputType.Search"
-          v-model="searchInput"
+        v-model:user-input="searchInput"
       />
       <AccordionItem
           v-for="(faq, index) in faqs"
@@ -76,17 +76,16 @@ const faqs = ref<AccordionItemContent[]>([
 ]);
 
 function toggleContent(index: number) {
-  activeIndex.value = activeIndex.value === index ? null : index;
+    activeIndex.value = activeIndex.value === index ? null : index;
 }
+
 
 function isItemOpen(index: number, faq: AccordionItemContent) {
   const searchTerm = searchInput.value.trim().toLowerCase();
-
   if (!searchTerm) {
     return activeIndex.value === index;
   }
-  return faq.content.toLowerCase().includes(searchTerm) ||
-      faq.header.toLowerCase().includes(searchTerm);
+  return faq.content.toLowerCase().includes(searchTerm) ||  faq.header.toLowerCase().includes(searchTerm)
 }
 
 </script>

@@ -121,6 +121,8 @@ const totalCartPrice = computed(() => {
         flex-direction: column;
         gap: 32px;
         width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
         max-height: 300px;
         overflow: scroll;
 
@@ -180,6 +182,20 @@ const totalCartPrice = computed(() => {
           }
         }
       }
+    }
+  }
+}
+
+@media (min-width: 740px) {
+  .cart-slider {
+
+    .overlay {
+      width: 100%;
+    }
+
+    .slider-content {
+      width: 400px;
+      padding: 50px 50px;
     }
   }
 }

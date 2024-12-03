@@ -57,8 +57,8 @@ const currentStepIndex = computed(() =>
     checkoutStore.checkoutSteps.findIndex(step => step.pathName === route.name)
 )
 
-const dynamicBackButtonText: ComputedRef<string> = computed(()=> {
-  if(currentStepIndex.value === 0) {
+const dynamicBackButtonText: ComputedRef<string> = computed(() => {
+  if (currentStepIndex.value === 0) {
     return 'Zurück zum Warenkorb'
   } else {
     return 'Zurück'
@@ -82,7 +82,7 @@ function goToStep(index: number) {
     return;
   }
 
-  router.push({ name: checkoutStore.checkoutSteps[index].pathName });
+  router.push({name: checkoutStore.checkoutSteps[index].pathName});
 }
 
 
@@ -98,7 +98,7 @@ function validate() {
     }
 
     if (stepIndex >= 0 && stepIndex < checkoutStore.checkoutSteps.length - 1) {
-      router.push({ name: checkoutStore.checkoutSteps[stepIndex + 1].pathName });
+      router.push({name: checkoutStore.checkoutSteps[stepIndex + 1].pathName});
     }
   }
 }
@@ -112,12 +112,12 @@ function goBack() {
   }
 
   if (stepIndex === 0) {
-    router.push({ name: "cart" });
+    router.push({name: "cart"});
     return;
   }
 
   if (stepIndex > 0) {
-    router.push({ name: checkoutStore.checkoutSteps[stepIndex - 1].pathName });
+    router.push({name: checkoutStore.checkoutSteps[stepIndex - 1].pathName});
   }
 }
 
@@ -161,6 +161,18 @@ function goBack() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+@media (min-width: 740px) {
+  .button-section {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+
+    > * {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
 }
 
 </style>

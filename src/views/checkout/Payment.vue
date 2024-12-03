@@ -14,27 +14,29 @@
         <p>{{ deliveryData.country }}</p>
       </div>
     </div>
-    <div class="product-summary">
-      <h2>Warenkorb</h2>
-      <div v-if="cartItems"
-           v-for="item in cartItems"
-           :key="item.item.id"
-           class="item">
-        <div class="image-wrapper">
-          <img :src="getImage(item.item.images[0])" alt="">
-        </div>
-        <div class="item-info">
-          <p>{{ item.item.displayName }}</p>
-          <div class="price">
-            <p> {{ item.quantity }} x</p>
-            <p> {{ formatPrice(item.item.price) }}</p>
-            <p> {{ formatPrice(item.item.price * item.quantity) }}</p>
+    <div class="bottom">
+      <div class="product-summary">
+        <h2>Warenkorb</h2>
+        <div v-if="cartItems"
+             v-for="item in cartItems"
+             :key="item.item.id"
+             class="item">
+          <div class="image-wrapper">
+            <img :src="getImage(item.item.images[0])" alt="">
+          </div>
+          <div class="item-info">
+            <p>{{ item.item.displayName }}</p>
+            <div class="price">
+              <p> {{ item.quantity }} x</p>
+              <p> {{ formatPrice(item.item.price) }}</p>
+              <p> {{ formatPrice(item.item.price * item.quantity) }}</p>
+            </div>
           </div>
         </div>
-      </div>
 
+      </div>
+      <div id="paypal-button-container"></div>
     </div>
-    <div id="paypal-button-container"></div>
   </div>
 </template>
 
@@ -83,12 +85,12 @@ const cartItems = computed(() => {
   return cartStore.itemsInCart
 })
 
-const currentStepIndex = computed(()=> {
+const currentStepIndex = computed(() => {
   return checkoutStore.checkoutSteps.findIndex(step => step.pathName === route.name)
 })
 
 
-const totalPriceWithDeliveryCosts = computed(()=> {
+const totalPriceWithDeliveryCosts = computed(() => {
   return cartStore.totalCartPriceWithDeliveryCosts
 })
 
@@ -168,7 +170,7 @@ function initializePayPalButtons() {
                     console.error("Fehler beim Senden der E-Mail:", error);
                   });
 
-              router.push({ name: "confirm-order" });
+              router.push({name: "confirm-order"});
             });
           },
           onError: (err: any) => {
@@ -192,14 +194,13 @@ function initializePayPalButtons() {
 onMounted(() => loadPayPalSDK());
 
 
-
-
 </script>
 
 <style scoped>
 
 .route-wrapper {
   width: 100%;
+  max-width: 920px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -210,48 +211,217 @@ onMounted(() => loadPayPalSDK());
     gap: 32px;
   }
 
-  .product-summary {
+  .bottom{
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 32px;
 
-    .item {
+    .product-summary {
       display: flex;
-      align-items: center;
-      gap: 16px;
+      flex-direction: column;
+      gap: 32px;
 
-      .image-wrapper {
+      .item {
         display: flex;
         align-items: center;
-        justify-content: center;
-        background: var(--light-gray);
-        width: 90px;
-        height: 90px;
+        gap: 16px;
 
-        img {
-          width: 90%;
-          height: auto;
-        }
-      }
-
-      .item-info {
-        display: flex;
-        flex-direction: column;
-
-        & > p {
-          font-size: 16px;
-        }
-
-        .price {
+        .image-wrapper {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
+          background: var(--light-gray);
+          width: 90px;
+          height: 90px;
 
-          p {
-            font-size: 14px;
+          img {
+            width: 90%;
+            height: auto;
+          }
+        }
 
-            &:last-child {
-              font-weight: 700;
+        .item-info {
+          display: flex;
+          flex-direction: column;
+
+          & > p {
+            font-size: 16px;
+          }
+
+          .price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            p {
+              font-size: 14px;
+
+              &:last-child {
+                font-weight: 700;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 740px) {
+  .route-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .summary-flex {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+
+      .personal-summary, .delivery-summary {
+        width: 50%;
+      }
+    }
+    .bottom{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 32px;
+
+      #paypal-button-container{
+        width: 300px;
+        align-self: center;
+      }
+
+      .product-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        width: 100%;
+
+        .item {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .image-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-gray);
+            width: 90px;
+            height: 90px;
+
+            img {
+              width: 90%;
+              height: auto;
+            }
+          }
+
+          .item-info {
+            display: flex;
+            flex-direction: column;
+
+            & > p {
+              font-size: 16px;
+            }
+
+            .price {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+
+              p {
+                font-size: 14px;
+
+                &:last-child {
+                  font-weight: 700;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .route-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .summary-flex {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+
+      .personal-summary, .delivery-summary {
+        width: 50%;
+      }
+    }
+    .bottom{
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 32px;
+
+      #paypal-button-container{
+        width: 400px;
+        align-self: flex-end;
+      }
+
+      .product-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        width: 100%;
+
+        .item {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .image-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-gray);
+            width: 90px;
+            height: 90px;
+
+            img {
+              width: 90%;
+              height: auto;
+            }
+          }
+
+          .item-info {
+            display: flex;
+            flex-direction: column;
+
+            & > p {
+              font-size: 16px;
+            }
+
+            .price {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+
+              p {
+                font-size: 14px;
+
+                &:last-child {
+                  font-weight: 700;
+                }
+              }
             }
           }
         }

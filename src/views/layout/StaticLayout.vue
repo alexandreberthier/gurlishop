@@ -47,6 +47,7 @@ const {header, subHeader} = defineProps<{
 @media (min-width: 1200px) {
   .layout{
     width: 920px;
+    gap: 80px;
   }
 }
 

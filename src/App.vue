@@ -1,14 +1,16 @@
 <template>
-  <nav>
-    <Navbar/>
-    <CartNavSlider/>
-  </nav>
-  <main>
-    <RouterView></RouterView>
-  </main>
-  <footer>
-    <Footer/>
-  </footer>
+  <div class="content">
+    <nav>
+      <Navbar/>
+      <CartNavSlider/>
+    </nav>
+    <main>
+      <RouterView></RouterView>
+    </main>
+    <footer>
+      <Footer/>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -26,12 +28,24 @@ authStore.watchUser()
 
 <style scoped>
 
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+  }
+
+  main {
+    flex: 1;
+  }
+
 }
+
 
 </style>

@@ -1,28 +1,32 @@
 <template>
   <div class="route-wrapper">
-    <DynamicInput
-        label="Vorname"
-        v-model:user-input="checkoutStore.personalData.firstName"
-        v-model:user-error="firstNameError"
-        :input-type="InputType.Text"
-    />
-    <DynamicInput
-        label="Nachname"
-        v-model:user-input="checkoutStore.personalData.lastName"
-        v-model:user-error="lastNameError"
-        :input-type="InputType.Text"
-    />
-    <DynamicInput
-        label="Email"
-        v-model:user-input="checkoutStore.personalData.email"
-        v-model:user-error="emailError"
-        :input-type="InputType.Email"
-    />
-    <DynamicInput
-        label="Telefonnummer"
-        v-model:user-input="checkoutStore.personalData.phoneNumber"
-        :input-type="InputType.Phone"
-    />
+    <div class="row">
+      <DynamicInput
+          label="Vorname"
+          v-model:user-input="checkoutStore.personalData.firstName"
+          v-model:user-error="firstNameError"
+          :input-type="InputType.Text"
+      />
+      <DynamicInput
+          label="Nachname"
+          v-model:user-input="checkoutStore.personalData.lastName"
+          v-model:user-error="lastNameError"
+          :input-type="InputType.Text"
+      />
+    </div>
+    <div class="row">
+      <DynamicInput
+          label="Email"
+          v-model:user-input="checkoutStore.personalData.email"
+          v-model:user-error="emailError"
+          :input-type="InputType.Email"
+      />
+      <DynamicInput
+          label="Telefonnummer"
+          v-model:user-input="checkoutStore.personalData.phoneNumber"
+          :input-type="InputType.Phone"
+      />
+    </div>
   </div>
 </template>
 
@@ -77,9 +81,36 @@ defineExpose({validateInputFields})
 
 .route-wrapper {
   width: 100%;
+  max-width: 920px;
   display: flex;
   flex-direction: column;
   gap: 32px;
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .route-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    height: 230px;
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      >* {
+        width: 100%;
+      }
+    }
+  }
 }
 
 </style>

@@ -1,35 +1,41 @@
 <template>
   <div class="route-wrapper">
-    <DynamicInput
-        label="Straße"
-        v-model:user-input="checkoutStore.deliveryData.street"
-        v-model:user-error="streetError"
-        :input-type="InputType.Text"
-    />
-    <DynamicInput
-        label="Hausnummer"
-        v-model:user-input="checkoutStore.deliveryData.houseNumber"
-        v-model:user-error="houseNumberError"
-        :input-type="InputType.Text"
-    />
-    <DynamicInput
-        label="Postleitzahl"
-        v-model:user-input="checkoutStore.deliveryData.postalCode"
-        v-model:user-error="postalCodeError"
-        :input-type="InputType.PostalCode"
-    />
-    <DynamicInput
-        label="Stadt"
-        v-model:user-input="checkoutStore.deliveryData.city"
-        v-model:user-error="cityError"
-        :input-type="InputType.Text"
-    />
-    <DynamicInput
-        label="Land"
-        v-model:user-input="checkoutStore.deliveryData.country"
-        v-model:user-error="countryError"
-        :input-type="InputType.Text"
-    />
+    <div class="row">
+      <DynamicInput
+          label="Straße"
+          v-model:user-input="checkoutStore.deliveryData.street"
+          v-model:user-error="streetError"
+          :input-type="InputType.Text"
+      />
+      <DynamicInput
+          label="Hausnummer"
+          v-model:user-input="checkoutStore.deliveryData.houseNumber"
+          v-model:user-error="houseNumberError"
+          :input-type="InputType.Text"
+      />
+    </div>
+    <div class="row">
+      <DynamicInput
+          label="Postleitzahl"
+          v-model:user-input="checkoutStore.deliveryData.postalCode"
+          v-model:user-error="postalCodeError"
+          :input-type="InputType.PostalCode"
+      />
+      <DynamicInput
+          label="Stadt"
+          v-model:user-input="checkoutStore.deliveryData.city"
+          v-model:user-error="cityError"
+          :input-type="InputType.Text"
+      />
+    </div>
+    <div class="row">
+      <DynamicInput
+          label="Land"
+          v-model:user-input="checkoutStore.deliveryData.country"
+          v-model:user-error="countryError"
+          :input-type="InputType.Text"
+      />
+    </div>
   </div>
 </template>
 
@@ -86,9 +92,39 @@ defineExpose({validateInputFields})
 
 .route-wrapper {
   width: 100%;
+  max-width: 920px;
   display: flex;
   flex-direction: column;
   gap: 32px;
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .route-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      > * {
+        width: 100%;
+      }
+
+      &:last-child {
+        width: 444px;
+      }
+    }
+  }
 }
 
 </style>
