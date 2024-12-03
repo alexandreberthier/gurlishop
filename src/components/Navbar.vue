@@ -104,7 +104,7 @@ onUnmounted(() => {
   transition: all 250ms ease-in-out;
 
   &.scrolled {
-    height: 70px;
+    height: 110px;
   }
 
   .logo {

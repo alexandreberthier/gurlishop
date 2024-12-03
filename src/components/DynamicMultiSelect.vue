@@ -42,53 +42,44 @@
 
 import {getImage} from "@/utils/ImageUtils";
 import type {Option} from "@/models/PropInterfaces";
-import {computed, type ModelRef, onBeforeUnmount, onMounted, type Ref, ref, watch} from "vue";
+import {computed, type ModelRef, onBeforeUnmount, onMounted, type Ref, ref} from "vue";
 
 const {options} = defineProps<{
   options: Option[]
 }>()
 
-const selectWrapper = ref(HTMLDivElement)
+const selectWrapper = ref<HTMLElement>()
 
 const showOptions: Ref<boolean> = ref(false)
 const selectedOptionValues: ModelRef<string[] | undefined> = defineModel('selectedOptions')
-const selectedOptions: Ref<Option[]> = ref([])
+
+const selectedOptions = computed(() => {
+  return options.filter(option => selectedOptionValues.value?.includes(option.value));
+});
 
 function selectOption(option: Option) {
-  const options = new Set(selectedOptions.value)
-  options.has(option) ? options.delete(option) : options.add(option)
-  selectedOptions.value = Array.from(options)
+  const values = new Set(selectedOptionValues.value || []);
+  values.has(option.value) ? values.delete(option.value) : values.add(option.value);
+  selectedOptionValues.value = Array.from(values);
 }
 
 function deleteOption(selectedOption: Option) {
-  selectedOptions.value = selectedOptions.value.filter(option => option.label !== selectedOption.label)
+  selectedOptionValues.value = selectedOptionValues.value?.filter(value => value !== selectedOption.value) || [];
 }
 
 const optionSelected = computed(() => {
-  return selectedOptions.value.length > 0
-})
+  return selectedOptions.value.length > 0;
+});
 
 function toggleOptions() {
-  showOptions.value = !showOptions.value
+  showOptions.value = !showOptions.value;
 }
-
-watch(
-    selectedOptions,
-    (newOptions) => {
-      selectedOptionValues.value = newOptions.map(option => option.value);
-    },
-    {immediate: true, deep: true}
-)
-
 
 function handleOutsideClick(event: Event) {
-  if(selectWrapper.value instanceof HTMLDivElement){
-    if (selectWrapper.value && !selectWrapper.value.contains(event.target as Node)) {
-      showOptions.value = false;
-    }
+  if (selectWrapper.value && !selectWrapper.value.contains(event.target as Node)) {
+    showOptions.value = false;
   }
 }
-
 
 onMounted(() => {
   document.addEventListener("click", handleOutsideClick);
@@ -98,8 +89,8 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleOutsideClick);
 });
 
-
 </script>
+
 
 <style scoped>
 
@@ -142,7 +133,7 @@ onBeforeUnmount(() => {
       background: var(--light-gray);
       box-sizing: border-box;
       padding: 5px;
-      border-radius: 10px;
+      border-radius: 4px;
       cursor: pointer;
       display: flex;
       align-items: center;

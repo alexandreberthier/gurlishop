@@ -6,11 +6,17 @@
           :input-type="InputType.Search"
           v-model:user-input="searchInput"
       />
-      <div class="category-flex">
+      <div class="flex">
         <DynamicMultiSelect
             v-model:selected-options="selectedCategories"
             :options="categoryOptions"
         />
+        <div
+            @click="deleteAllFilters"
+            v-if="filterSelected"
+            class="delete-filter">
+          <img :src="getImage('ic_delete_all.png')" alt="">
+        </div>
       </div>
     </div>
     <div v-if="filteredItems.length > 0" class="item-flex">
@@ -35,6 +41,7 @@ import DynamicInput from "@/components/DynamicInput.vue";
 import {InputType} from "@/models/InputType";
 import DynamicMultiSelect from "@/components/DynamicMultiSelect.vue";
 import type {Option} from "@/models/PropInterfaces";
+import {getImage} from "@/utils/ImageUtils";
 
 const productStore = useProductStore()
 
@@ -43,6 +50,10 @@ const selectedCategories: Ref<string[]> = ref([])
 
 const items: ComputedRef<Item[]> = computed(() => {
   return productStore.items.map(item => Item.fromDto(item))
+})
+
+const filterSelected = computed(()=> {
+  return !!searchInput.value || selectedCategories.value.length > 0
 })
 
 const filteredItems = computed(() => {
@@ -56,8 +67,12 @@ const filteredItems = computed(() => {
   return filteredBySearchInput.filter(item =>
       selectedCategories.value.includes(item.category)
   );
-});
+})
 
+function deleteAllFilters(){
+  searchInput.value = ''
+  selectedCategories.value = []
+}
 
 const categoryOptions: Ref<Option[]> = ref([
   {
@@ -83,6 +98,32 @@ const categoryOptions: Ref<Option[]> = ref([
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  .flex {
+    display: flex;
+    flex-direction: column;
+    align-items:flex-end;
+    gap: 16px;
+
+    .delete-filter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      cursor: pointer;
+      box-sizing: border-box;
+      border: 1px solid var(--black);
+      border-radius: 4px;
+      flex-shrink: 0;
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+  }
 }
 
 .item-flex {
@@ -94,6 +135,21 @@ const categoryOptions: Ref<Option[]> = ref([
   justify-content: center;
 }
 
+@media (min-width: 740px) {
+  .filter-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .flex {
+      display: flex;
+      flex-direction: row;
+      align-items:center;
+    }
+  }
+}
+
 @media (min-width: 1200px) {
   .filter-section {
     width: 100%;
@@ -102,7 +158,7 @@ const categoryOptions: Ref<Option[]> = ref([
     justify-content: left;
 
     > * {
-      width: 300px;
+      width: 400px;
     }
   }
 
