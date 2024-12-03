@@ -18,6 +18,7 @@ import DeliveryData from "@/views/checkout/DeliveryData.vue";
 import Payment from "@/views/checkout/Payment.vue";
 import ConfirmOrder from "@/views/checkout/ConfirmOrder.vue";
 import ImprintView from "@/views/ImprintView.vue";
+import AdminView from "@/views/admin/AdminView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,6 +54,12 @@ const router = createRouter({
             path: '/impressum',
             name: 'imprint',
             component: ImprintView,
+        },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: AdminView,
+            meta: {isLoggedIn: true, isAdmin: true},
         },
         {
             path: '/auth',
@@ -135,18 +142,26 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
-    const cartStore = useCartStore()
+    const cartStore = useCartStore();
 
+    // Prüfung: Zugriff nur für Admins
+    if (to.meta.isAdmin && (!authStore.isLoggedIn || !authStore.isAdmin)) {
+        return next({name: 'login'});
+    }
+
+    // Prüfung: Zugriff nur für eingeloggte Benutzer
     if (to.meta.isLoggedIn && !authStore.isLoggedIn) {
         return next({name: 'login'});
     }
 
+    // Prüfung: Zugriff nur, wenn Artikel im Warenkorb sind
     if (to.meta.hasItemsInCart && cartStore.totalCartItems < 1) {
         return next({name: 'home'});
     }
 
     next();
 });
+
 
 
 export default router

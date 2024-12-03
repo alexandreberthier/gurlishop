@@ -20,6 +20,9 @@ export const useAuthStore = defineStore('auth', () => {
     const errorMessage: Ref<string> = ref('')
     const successMessage: Ref<string> = ref('')
 
+    const isAdmin = computed(()=> {
+        return user.value?.role === 'admin'
+    })
     const adminOrders: Ref<Order[]> = ref([]);
 
     const isLoggedIn = computed(() => {
@@ -79,7 +82,12 @@ export const useAuthStore = defineStore('auth', () => {
                 });
             })
             .then(() => {
-                router.push({name: 'user'})
+                if(!isAdmin) {
+                    router.push({name: 'user'})
+                } else{
+                    router.push({name: 'admin'})
+                }
+
                 successMessage.value = 'Erfolgreich eingeloggt';
             })
             .catch(error => {
@@ -137,35 +145,6 @@ export const useAuthStore = defineStore('auth', () => {
             });
     }
 
-    function updateUserInfo(updatedData: Partial<{ personalData: PersonalData; deliveryData: DeliveryData }>) {
-        if (!user.value) {
-            errorMessage.value = 'Benutzer ist nicht angemeldet.';
-            return;
-        }
-
-        const userDocRef = doc(db, "users", user.value.uid);
-
-        isLoading.value = true;
-
-        updateDoc(userDocRef, updatedData)
-            .then(() => {
-                if (updatedData.personalData) {
-                    user.value!.personalData = {...user.value!.personalData, ...updatedData.personalData};
-                }
-                if (updatedData.deliveryData) {
-                    user.value!.deliveryData = {...user.value!.deliveryData, ...updatedData.deliveryData};
-                }
-
-                successMessage.value = 'Daten erfolgreich aktualisiert.';
-            })
-            .catch(error => {
-                errorMessage.value = `Fehler beim Aktualisieren der Daten: ${error.message}`;
-            })
-            .finally(() => {
-                isLoading.value = false;
-            })
-    }
-
     function fetchUserOrders() {
         if (!user.value) {
             errorMessage.value = 'Benutzer ist nicht angemeldet.';
@@ -179,7 +158,7 @@ export const useAuthStore = defineStore('auth', () => {
         getDoc(userDocRef)
             .then(userDoc => {
                 if (userDoc.exists()) {
-                    const data = userDoc.data();
+                    const data = userDoc.data() as UserDTO;
                     user.value!.orders = data.orders || [];
                     successMessage.value = 'Bestellungen erfolgreich abgerufen.';
                 } else {
@@ -194,6 +173,7 @@ export const useAuthStore = defineStore('auth', () => {
                 isLoading.value = false;
             });
     }
+
 
     function fetchAllOrders() {
         if (!user.value || user.value.role !== 'admin') {
@@ -231,7 +211,43 @@ export const useAuthStore = defineStore('auth', () => {
             })
     }
 
+    function updateUserInfo(updatedData: Partial<{ personalData: PersonalData; deliveryData: DeliveryData }>) {
+        if (!user.value) {
+            errorMessage.value = 'Benutzer ist nicht angemeldet.';
+            return;
+        }
 
+        const userDocRef = doc(db, "users", user.value.uid);
+
+        isLoading.value = true;
+
+        updateDoc(userDocRef, updatedData)
+            .then(() => {
+                // Lokale Daten aktualisieren
+                if (updatedData.personalData) {
+                    user.value!.personalData = {
+                        ...user.value!.personalData,
+                        ...updatedData.personalData
+                    };
+                }
+                if (updatedData.deliveryData) {
+                    user.value!.deliveryData = {
+                        ...user.value!.deliveryData,
+                        ...updatedData.deliveryData
+                    };
+                }
+
+                successMessage.value = 'Daten erfolgreich aktualisiert.';
+            })
+            .catch(error => {
+                errorMessage.value = `Fehler beim Aktualisieren der Daten: ${error.message}`;
+            })
+            .finally(() => {
+                isLoading.value = false;
+            });
+    }
+
+    fetchAllOrders()
 
 
     return {
@@ -247,6 +263,8 @@ export const useAuthStore = defineStore('auth', () => {
         watchUser,
         logout,
         isLoggedIn,
+        isAdmin,
+        adminOrders
     }
 
 })
