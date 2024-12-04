@@ -1,7 +1,7 @@
 export interface PersonalData {
     firstName?: string;
     lastName?: string;
-    email: string;
+    email?: string;
     phoneNumber?: string;
 }
 
@@ -14,9 +14,14 @@ export interface DeliveryData {
 }
 
 export interface Item {
-    productId: string;
+    id: string;
+    displayName: string; // Der Name des Artikels
+    price: number;
     quantity: number;
+    images?: string[]; // Falls Bilder existieren
 }
+
+
 
 export interface Order {
     id: string;

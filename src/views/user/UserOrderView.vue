@@ -7,20 +7,16 @@
         <p>Total: {{ order.totalAmount }} €</p>
       </li>
     </ul>
-    <p v-if="successMessage">{{ successMessage }}</p>
-    <p v-if="errorMessage">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import { useAuthStore } from "@/stores/auth";
+import {onMounted, computed} from "vue";
+import {useAuthStore} from "@/stores/auth";
 
 const authStore = useAuthStore();
 
-const orders = authStore.user?.orders || [];
-const successMessage = ref(authStore.successMessage);
-const errorMessage = ref(authStore.errorMessage);
+const orders = computed(() => authStore.user?.orders || []);
 
 onMounted(() => {
   authStore.fetchUserOrders();

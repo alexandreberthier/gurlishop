@@ -48,6 +48,8 @@ import {getImage} from "@/utils/ImageUtils";
 import {formatPrice} from "@/utils/PriceUtils";
 import {sendConfirmationEmail} from "@/config/emailService";
 import {useRoute, useRouter} from "vue-router";
+import type {Order} from "@/models/User";
+import {useAuthStore} from "@/stores/auth";
 
 interface PayPalData {
   orderID: string;
@@ -72,6 +74,7 @@ const route = useRoute()
 
 const checkoutStore = useCheckoutStore()
 const cartStore = useCartStore()
+const  authStore= useAuthStore()
 
 const personalData = computed(() => {
   return checkoutStore.personalData
@@ -144,6 +147,24 @@ function initializePayPalButtons() {
                     stepIndex
                 );
               }
+
+
+              const order: Order = {
+                id: details.id, // PayPal-Transaktions-ID
+                items: cartItems.value.map((item) => ({
+                  id: item.item.id,
+                  displayName: item.item.displayName, // Korrekt mit `displayName`
+                  price: item.item.price,
+                  quantity: item.quantity,
+                })),
+                totalAmount: totalPriceWithDeliveryCosts.value,
+                status: 'pending',
+                createdAt: new Date(),
+              };
+
+              // Bestellung speichern
+              authStore.saveOrder(order);
+
 
               const emailParams = {
                 transactionId: details.id,

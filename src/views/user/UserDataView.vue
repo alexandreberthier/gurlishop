@@ -43,6 +43,11 @@
           :input-type="InputType.Text"
           v-model:user-input="deliveryData.city"
       />
+      <DynamicInput
+          label="Land"
+          :input-type="InputType.Text"
+          v-model:user-input="deliveryData.country"
+      />
     </div>
 
     <DynamicButton
@@ -75,22 +80,27 @@ const deliveryData = ref<Partial<DeliveryData>>({
   postalCode: '',
   city: '',
   country: ''
-});
+})
 
-const successMessage = ref(authStore.successMessage);
-const errorMessage = ref(authStore.errorMessage);
 
 function initializeData() {
   if (authStore.user) {
     personalData.value = {
-      ...authStore.user.personalData,
-      email: authStore.user.personalData?.email || ''
+      firstName: authStore.user.personalData?.firstName || '',
+      lastName: authStore.user.personalData?.lastName || '',
+      email: authStore.user.personalData?.email || '',
+      phoneNumber: authStore.user.personalData?.phoneNumber || ''
     };
     deliveryData.value = {
-      ...authStore.user.deliveryData
+      street: authStore.user.deliveryData?.street || '',
+      houseNumber: authStore.user.deliveryData?.houseNumber || '',
+      postalCode: authStore.user.deliveryData?.postalCode || '',
+      city: authStore.user.deliveryData?.city || '',
+      country: authStore.user.deliveryData?.country || ''
     };
   }
 }
+
 
 // Überwache Änderungen im Benutzerobjekt
 watch(
@@ -108,13 +118,11 @@ onMounted(() => {
 
 function saveData() {
   authStore.updateUserInfo({
-    personalData: {
-      ...personalData.value,
-      email: ''
-    },
+    personalData: personalData.value,
     deliveryData: deliveryData.value,
   });
 }
+
 </script>
 
 

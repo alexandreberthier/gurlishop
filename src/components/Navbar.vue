@@ -19,7 +19,7 @@
     <div class="icon-section">
       <router-link
           @click="cartStore.hideCartSlider(),  navbarStore.closeMenu()"
-          :to="{name:  isLoggedIn ? 'user' :'auth'}">
+          :to="{name:  userRoute}">
         <div class="icon-wrapper">
           <img :src="getImage('ic_user.png')" alt="Einloggen, Registrieren, Account ">
         </div>
@@ -58,6 +58,15 @@ const cartStore = useCartStore()
 const isLoggedIn = computed(() => {
   return authStore.isLoggedIn
 })
+
+const userRoute = computed(() => {
+  if (authStore.isLoggedIn) {
+    return authStore.isAdmin ? 'admin' : 'user';
+  } else {
+    return 'auth';
+  }
+});
+
 
 const links = ref([
   {linkName: 'Kontakt', linkPath: 'contact'},

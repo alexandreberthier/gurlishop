@@ -20,14 +20,13 @@ export const useAuthStore = defineStore('auth', () => {
     const errorMessage: Ref<string> = ref('')
     const successMessage: Ref<string> = ref('')
 
-    const isAdmin = computed(()=> {
-        return user.value?.role === 'admin'
-    })
+    const isAdmin = computed(() => {
+        return user.value?.role === 'admin';
+    });
+
     const adminOrders: Ref<Order[]> = ref([]);
 
-    const isLoggedIn = computed(() => {
-        return !!user.value
-    })
+    const isLoggedIn = computed(() => !!user.value && isInitialized.value);
 
     function register(email: string, password: string) {
         isLoading.value = true;
@@ -36,17 +35,17 @@ export const useAuthStore = defineStore('auth', () => {
             .then(userCredential => {
                 const newUser = new User(
                     userCredential.user.uid,
-                    {email: userCredential.user.email || ''},
+                    {email: userCredential.user.email || ''}, // E-Mail setzen
                     undefined,
                     'user',
                     new Date()
-                )
+                );
                 user.value = newUser;
                 const userDocRef = doc(db, "users", user.value.uid);
                 return setDoc(userDocRef, user.value.toDto());
             })
             .then(() => {
-                router.push({name: 'user'})
+                router.push({name: 'user'});
                 successMessage.value = 'Erfolgreich registriert';
             })
             .catch(error => {
@@ -82,9 +81,9 @@ export const useAuthStore = defineStore('auth', () => {
                 });
             })
             .then(() => {
-                if(!isAdmin) {
+                if (!isAdmin.value) {
                     router.push({name: 'user'})
-                } else{
+                } else {
                     router.push({name: 'admin'})
                 }
 
@@ -99,9 +98,43 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
 
+    function saveOrder(order: Order) {
+        if (!user.value) {
+            errorMessage.value = 'Benutzer ist nicht angemeldet.';
+            return;
+        }
+
+        const userDocRef = doc(db, "users", user.value.uid);
+        const ordersCollectionRef = collection(db, "orders");
+
+        // Füge die Bestellung zur Benutzer-Liste hinzu
+        const updatedOrders = [...(user.value.orders || []), order];
+
+        // Speichere Bestellung in der 'orders'-Sammlung
+        addDoc(ordersCollectionRef, {
+            ...order,
+            userId: user.value.uid, // Benutzer-ID speichern
+        })
+            .then(() => {
+                return updateDoc(userDocRef, {orders: updatedOrders});
+            })
+            .then(() => {
+                user.value!.orders = updatedOrders; // Lokale Daten aktualisieren
+                successMessage.value = 'Bestellung erfolgreich gespeichert.';
+            })
+            .catch((error) => {
+                errorMessage.value = `Fehler beim Speichern der Bestellung: ${error.message}`;
+            });
+    }
+
+
+    const isInitialized: Ref<boolean> = ref(false);
+
     function watchUser() {
+        isInitialized.value = false;
+
         onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser && (!user.value || user.value.uid !== firebaseUser.uid)) {
+            if (firebaseUser) {
                 const userDocRef = doc(db, "users", firebaseUser.uid);
                 getDoc(userDocRef)
                     .then(userDoc => {
@@ -109,18 +142,21 @@ export const useAuthStore = defineStore('auth', () => {
                             const data = userDoc.data() as UserDTO;
                             user.value = User.fromDto(data);
                         } else {
-                            user.value = new User(firebaseUser.uid, { email: firebaseUser.email || '' });
+                            user.value = new User(firebaseUser.uid, {email: firebaseUser.email || ''});
                         }
                     })
                     .catch(error => {
                         errorMessage.value = `Fehler beim Abrufen der Benutzerdaten: ${error.message}`;
+                    })
+                    .finally(() => {
+                        isInitialized.value = true; // Auth fertig initialisiert
                     });
             } else {
                 user.value = null;
+                isInitialized.value = true; // Auth fertig initialisiert
             }
         });
     }
-
 
 
     function logout() {
@@ -187,16 +223,17 @@ export const useAuthStore = defineStore('auth', () => {
 
         getDocs(ordersCollectionRef)
             .then(querySnapshot => {
+                console.log('Abgerufene Dokumente:', querySnapshot.docs.map(doc => doc.data()));
                 const allOrders = querySnapshot.docs.map(doc => {
                     const data = doc.data();
                     return {
                         id: doc.id,
-                        items: data.items,
-                        totalAmount: data.totalAmount,
-                        status: data.status,
+                        items: data.items || [],
+                        totalAmount: data.totalAmount || 0,
+                        status: data.status || 'pending',
                         createdAt: data.createdAt.toDate(),
                         updatedAt: data.updatedAt ? data.updatedAt.toDate() : undefined,
-                        trackingNumber: data.trackingNumber || undefined
+                        trackingNumber: data.trackingNumber || null,
                     } as Order;
                 });
 
@@ -206,34 +243,37 @@ export const useAuthStore = defineStore('auth', () => {
             .catch(error => {
                 errorMessage.value = `Fehler beim Abrufen der Bestellungen: ${error.message}`;
             })
+
             .finally(() => {
                 isLoading.value = false;
             })
     }
 
     function updateUserInfo(updatedData: Partial<{ personalData: PersonalData; deliveryData: DeliveryData }>) {
+        // Überprüfen, ob der Benutzer existiert
         if (!user.value) {
             errorMessage.value = 'Benutzer ist nicht angemeldet.';
             return;
         }
 
+        // Sicherstellen, dass user.value nicht null ist
         const userDocRef = doc(db, "users", user.value.uid);
 
         isLoading.value = true;
 
         updateDoc(userDocRef, updatedData)
             .then(() => {
-                // Lokale Daten aktualisieren
+                // Lokale Benutzerinformationen aktualisieren
                 if (updatedData.personalData) {
                     user.value!.personalData = {
-                        ...user.value!.personalData,
-                        ...updatedData.personalData
+                        ...user.value!.personalData, // Bestehende Daten behalten
+                        ...updatedData.personalData // Neue Daten hinzufügen/überschreiben
                     };
                 }
                 if (updatedData.deliveryData) {
                     user.value!.deliveryData = {
-                        ...user.value!.deliveryData,
-                        ...updatedData.deliveryData
+                        ...user.value!.deliveryData, // Bestehende Daten behalten
+                        ...updatedData.deliveryData // Neue Daten hinzufügen/überschreiben
                     };
                 }
 
@@ -246,8 +286,6 @@ export const useAuthStore = defineStore('auth', () => {
                 isLoading.value = false;
             });
     }
-
-    fetchAllOrders()
 
 
     return {
@@ -264,7 +302,9 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         isLoggedIn,
         isAdmin,
-        adminOrders
+        adminOrders,
+        isInitialized,
+        saveOrder
     }
 
 })

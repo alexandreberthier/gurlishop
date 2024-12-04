@@ -65,6 +65,7 @@ const router = createRouter({
             path: '/auth',
             name: 'auth',
             component: AuthLayout,
+            meta: {isLoggedIn: false},
             redirect: {name: 'login'},
             children: [
                 {
@@ -140,27 +141,35 @@ const router = createRouter({
     }
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
     const cartStore = useCartStore();
 
-    // Prüfung: Zugriff nur für Admins
+
+    if (to.meta.isLoggedIn === false && authStore.isLoggedIn) {
+        return next({ name: 'home' }); // Umleitung auf die Startseite oder eine andere geeignete Seite
+    }
+
+    // Schutz für Admin-Routen
     if (to.meta.isAdmin && (!authStore.isLoggedIn || !authStore.isAdmin)) {
-        return next({name: 'login'});
+        return next({ name: 'login' });
     }
 
-    // Prüfung: Zugriff nur für eingeloggte Benutzer
+
+    // Schutz für eingeloggte Benutzer
     if (to.meta.isLoggedIn && !authStore.isLoggedIn) {
-        return next({name: 'login'});
+        return next({ name: 'login' });
     }
 
-    // Prüfung: Zugriff nur, wenn Artikel im Warenkorb sind
+    // Schutz für Warenkorb-Routen
     if (to.meta.hasItemsInCart && cartStore.totalCartItems < 1) {
-        return next({name: 'home'});
+        return next({ name: 'home' });
     }
 
     next();
 });
+
+
 
 
 
